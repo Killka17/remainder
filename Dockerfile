@@ -9,10 +9,10 @@ RUN apt-get update && apt-get install -y curl gnupg && \
 
 WORKDIR /app
 
-COPY remainder/build.sbt /app/
+COPY build.sbt /app/
 
 RUN sbt update
 
 ENV SBT_OPTS="--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED"
 
-CMD ["sbt", "run"]
+CMD ["sbt", "project remainder; run"]

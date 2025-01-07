@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.implicits.{catsSyntaxEither, catsSyntaxEitherId}
 import doobie.Transactor
 import doobie.implicits.toConnectionIOOps
-import remainder.dbСlient.SqlClient
+import remainder.dbclient.SqlClient
 import remainder.domain.{Errors, Remainder}
 import tofu.logging.Logging
 import tofu.syntax.logging.*
@@ -45,7 +45,7 @@ object RemainderStorage {
       sqlClient.allRemainders
         .transact(transactor)
         .attempt
-        .map(_.leftMap { case e: Throwable =>
+        .map(_.leftMap { (e: Throwable) =>
           InternalError(e.getMessage)
         })
 

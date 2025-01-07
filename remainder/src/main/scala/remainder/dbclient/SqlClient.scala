@@ -1,4 +1,4 @@
-package remainder.dbСlient
+package remainder.dbclient
 
 import cats.implicits.{catsSyntaxApplicativeId, catsSyntaxEitherId}
 import doobie.ConnectionIO
@@ -16,6 +16,7 @@ trait SqlClient {
   def insert(remainder: Remainder): ConnectionIO[Either[Errors.AppError, Remainder]]
   def remove(remainder: Remainder): ConnectionIO[Either[Errors.AppError, Unit]]
   def allRemainders: ConnectionIO[List[Remainder]]
+  def createTableIfNotExists: ConnectionIO[Int]
 }
 
 object SqlClient {
@@ -54,6 +55,16 @@ object SqlClient {
         WHERE remainder_time = $formattedDate::timestamp and remainder_text = $name
       """.query[Remainder]
     }
+
+    def createTableIfNotExistsSql: Update0 =
+      sql"""
+      CREATE SCHEMA IF NOT EXISTS remainder;
+      CREATE TABLE IF NOT EXISTS remainder.remainders (
+        id SERIAL PRIMARY KEY,
+        remainder_time TIMESTAMP NOT NULL,
+        remainder_text TEXT NOT NULL
+      );
+    """.update
   }
 }
 
@@ -75,4 +86,6 @@ final class Impl extends SqlClient {
       case 0 => Errors.RemainderNotFound.asLeft
       case _ => ().asRight
     }
+
+  override def createTableIfNotExists: ConnectionIO[Int] = createTableIfNotExistsSql.run
 }
