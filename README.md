@@ -8,22 +8,3 @@
     ```bash
     docker-compose up --build
     ```
-
----
-
-### Маппинг таблицы
-
-Для работы с базой данных требуется создать таблицу в схеме `remainder`. Используйте следующий SQL-запрос для создания таблицы:
-
-```sql
-create table remainder.remainders
-(
-    id             serial
-        constraint remainders_pk
-            primary key,
-    remainder_time timestamp not null,
-    remainder_text text      not null
-);
-
-alter table remainder.remainders
-    owner to admin;
