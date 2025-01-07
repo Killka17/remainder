@@ -18,3 +18,22 @@ services:
     ports:
       - 5432:5432
 
+  backend:
+    container_name: scala-backend
+    build: .
+    volumes:
+      - ./remainder:/app
+    restart: always
+    environment:
+      CHAT_ID: ???
+      POSTGRES_DB: remainder
+      POSTGRES_HOST: db
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: admin
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 8080
+    ports:
+      - 8080:8080
+    
+

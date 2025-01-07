@@ -1,15 +1,25 @@
-package domain
-
-import io.circe.generic.semiauto.*
+package remainder.domain
 
 object Errors {
 
-  sealed abstract class AppError(msg: String)
+  sealed trait AppError {
+    def msg: String
+  }
 
-  case class UnableToAccessDatabase() extends AppError("Unable to access database")
-  case class RemainderNotFound() extends AppError("Remainder not found")
-  case class RemainderAlreadyExist() extends AppError("Remainder already exist")
-  case class InternalError(msg: String = "Internal error") extends AppError(msg)
-  case class InvalidDateFormat(msg: String = "Invalid date format") extends AppError(msg)
+  case object UnableToAccessDatabase extends AppError {
+    override def msg: String = "Unable to access database"
+  }
+
+  case object RemainderNotFound extends AppError {
+    override def msg: String = "Remainder not found"
+  }
+
+  case object RemainderAlreadyExist extends AppError {
+    override def msg: String = "Remainder already exist"
+  }
+
+  case class InternalError(override val msg: String = "Internal error") extends AppError
+
+  case class InvalidDateFormat(override val msg: String = "Invalid date format") extends AppError
 
 }

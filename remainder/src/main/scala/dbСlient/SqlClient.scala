@@ -1,17 +1,15 @@
-package db_client
+package remainder.dbСlient
 
 import cats.implicits.{catsSyntaxApplicativeId, catsSyntaxEitherId}
-import db_client.SqlClient.sql
 import doobie.ConnectionIO
 import doobie.implicits.javasql.TimestampMeta
 import doobie.implicits.toSqlInterpolator
 import doobie.util.query.Query0
 import doobie.util.update.Update0
+import remainder.domain.{Errors, Remainder}
 
 import java.sql.Timestamp
 import java.time.format.DateTimeFormatter
-
-import domain.{Errors, Remainder}
 
 trait SqlClient {
   def findByDate(date: Timestamp): ConnectionIO[List[String]]
@@ -68,13 +66,13 @@ final class Impl extends SqlClient {
   override def insert(remainder: Remainder): ConnectionIO[Either[Errors.AppError, Remainder]] = {
     findByDateAndNameSql(remainder.name, remainder.reminderDate).option
       .flatMap {
-        case Some(_) => Errors.RemainderAlreadyExist().asLeft.pure[ConnectionIO]
+        case Some(_) => Errors.RemainderAlreadyExist.asLeft.pure[ConnectionIO]
         case None    => insertSql(remainder).map(_ => remainder.asRight)
       }
   }
   override def remove(remainder: Remainder): ConnectionIO[Either[Errors.AppError, Unit]] =
     removeSql(remainder).run.map {
-      case 0 => Errors.RemainderNotFound().asLeft
+      case 0 => Errors.RemainderNotFound.asLeft
       case _ => ().asRight
     }
 }
